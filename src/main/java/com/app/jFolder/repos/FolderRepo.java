@@ -1,7 +1,6 @@
 package com.app.jFolder.repos;
 
 import com.app.jFolder.domain.Folder;
-import com.app.jFolder.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
