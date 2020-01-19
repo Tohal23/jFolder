@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
-@Table(name = "usr")
+@Table(name = "usr",  indexes = {@Index(name = "idx_user_name", columnList = "username")})
 public class User implements UserDetails {
 
     @Id

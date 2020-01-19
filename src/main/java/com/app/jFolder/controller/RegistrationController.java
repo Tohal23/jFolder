@@ -1,6 +1,8 @@
 package com.app.jFolder.controller;
 
+import com.app.jFolder.domain.Folder;
 import com.app.jFolder.domain.User;
+import com.app.jFolder.repos.FolderRepo;
 import com.app.jFolder.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("registration")
 public class RegistrationController {
     private final UserService userService;
+    private final FolderRepo folderRepo;
 
-    public RegistrationController(UserService userService) {
+    public RegistrationController(UserService userService, FolderRepo folderRepo) {
         this.userService = userService;
+        this.folderRepo = folderRepo;
     }
 
     @GetMapping
@@ -24,11 +28,16 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public String registration(Model model,User user) {
+    public String registration(Model model, User user) {
         if (!userService.addUser(user)) {
             model.addAttribute("message", "User exists!");
             return "registrationPage";
         }
+
+        Folder rootFolder = new Folder();
+        rootFolder.setUser(user);
+        rootFolder.setName("root");
+        folderRepo.save(rootFolder);
 
         return "redirect:/";
     }
