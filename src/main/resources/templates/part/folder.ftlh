@@ -23,11 +23,3 @@
         <a href="" class="list-group-item list-group-item-action h6">...Nothing</a>
         </#list>
     </div>
-    <#list exceptions as exception>
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        ${exception}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    </#list>

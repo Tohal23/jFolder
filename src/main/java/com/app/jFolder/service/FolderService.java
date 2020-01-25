@@ -12,18 +12,13 @@ import java.util.List;
 public class FolderService {
 
     public List<Folder> getWayToHeadInTree(List<Folder> foldersTree, String folderName) {
-        ArrayList<Folder> foldersWayRev = new ArrayList<>();
-        ArrayList<Folder> foldersWay = new ArrayList<>();
+        LinkedList<Folder> foldersWay = new LinkedList<>();
 
         Folder folder = foldersTree.stream().filter(name -> name.getName().equals(folderName)).findFirst().get();
 
         while (folder != null) {
-            foldersWayRev.add(folder);
+            foldersWay.addFirst(folder);
             folder = folder.getParent();
-        }
-
-        for (int i = foldersWayRev.size()-1; i >= 0 ; i--) {
-            foldersWay.add(foldersWayRev.get(i));
         }
 
         return foldersWay;

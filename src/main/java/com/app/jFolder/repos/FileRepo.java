@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FileRepo extends JpaRepository<File, Long> {
 
+    File findByName(String name);
+
 }

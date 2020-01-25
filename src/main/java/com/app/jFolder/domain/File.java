@@ -10,10 +10,12 @@ public class File implements Comparable<File>{
     private Long id;
     @Column(name = "file_name")
     private String name;
+    @Column(name = "file_system_name")
+    private String systemName;
+    private Integer number;
     @ManyToOne
     private Folder folder;
     private String path;
-
 
     public Long getId() {
         return id;
@@ -31,7 +33,6 @@ public class File implements Comparable<File>{
         this.folder = folder;
     }
 
-
     public String getName() {
         return name;
     }
@@ -46,6 +47,22 @@ public class File implements Comparable<File>{
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getSystemName() {
+        return systemName;
+    }
+
+    public void setSystemName(String systemName) {
+        this.systemName = systemName;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
     @Override

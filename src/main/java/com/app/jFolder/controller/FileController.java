@@ -21,17 +21,16 @@ public class FileController {
         this.fileService = fileService;
     }
 
-    @PostMapping("/add/{folderNames}")
+    @PostMapping("/add/{folderName}")
     public String addFile(Model model,
                           @PathVariable String folderName,
                           @AuthenticationPrincipal User user,
                           @RequestParam("file") MultipartFile file_data
                           ) throws IOException {
-        if (!fileService.addFile(file_data, user, folderName)) {
-            model.addAttribute("exceptions", new ArrayList<String>().add("File didn't create."));
-        }
 
-        return "startPage";
+        fileService.addFile(file_data, user, folderName);
+
+        return "redirect:/folders/"+folderName;
     }
 
 }
