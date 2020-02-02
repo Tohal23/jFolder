@@ -1,4 +1,4 @@
-package com.app.jFolder.repos;
+package com.app.jFolder.repos.custom;
 
 import com.app.jFolder.domain.Folder;
 

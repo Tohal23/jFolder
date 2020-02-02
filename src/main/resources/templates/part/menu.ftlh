@@ -4,7 +4,7 @@
         </div>
         <a href="" class="list-group-item list-group-item-action" data-toggle="modal" data-target="#addFolder">Add folder</a>
         <a href="" class="list-group-item list-group-item-action" data-toggle="modal" data-target="#renameFolder">Rename folder</a>
-
+        <a href="" class="list-group-item list-group-item-action" data-toggle="modal" data-target="#deleteFolder">Delete folder</a>
     </div>
 
     <div class="fixed-bottom">
@@ -15,7 +15,7 @@
                     <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
                 </div>
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04">Кнопка</button>
+                    <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04">Upload</button>
                 </div>
             </div>
             <input type="hidden" name="_csrf" value="${_csrf.token}" />
@@ -58,11 +58,34 @@
                 </div>
                 <form action="/folders/rename/${folderName}" method="post">
                     <div class="modal-body">
-                        <input type="text" name="newFolderName" class="form-control"/>
+                        <input type="text" name="newFolderName" class="form-control" value="${folderName}"/>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                    <input type="hidden" name="_csrf" value="${_csrf.token}" />
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Folder -->
+    <div class="modal fade" id="deleteFolder" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel2">Delete folder</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="/folders/delete/${folderName}" method="post">
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Delete folder</button>
                     </div>
                     <input type="hidden" name="_csrf" value="${_csrf.token}" />
                 </form>

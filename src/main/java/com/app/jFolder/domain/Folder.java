@@ -1,5 +1,8 @@
 package com.app.jFolder.domain;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.OnDelete;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,9 +20,9 @@ public class Folder implements Comparable<Folder> {
     @JoinColumn(name = "user_id")
     private User user;
     private String name;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", cascade = CascadeType.REMOVE)
     private Set<Folder> folders = new HashSet<>();
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "folder")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "folder", cascade = CascadeType.REMOVE)
     private Set<File> files = new HashSet<>();
 
 

@@ -80,16 +80,28 @@ public class FolderController {
             , @RequestParam String folderName
             , @PathVariable String parentFolder
     ) {
-        Folder folder = new Folder();
-        folder.setName(folderName);
-        folder.setUser(user);
-        if (!parentFolder.isEmpty()) {
-            folder.setParent(folderRepo.getFolderByUserUsernameAndName(user.getUsername(), parentFolder));
+        if (folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName) == null) {
+            Folder folder = new Folder();
+            folder.setName(folderName);
+            folder.setUser(user);
+            if (!parentFolder.isEmpty()) {
+                folder.setParent(folderRepo.getFolderByUserUsernameAndName(user.getUsername(), parentFolder));
+            }
+            folderRepo.save(folder);
+            //model.addAttribute("folders", folder.getFolders());
+            model.addAttribute("folderName", folderName);
+            return "redirect:/folders/"+folderName;
+        } else {
+            return "redirect:/folders/"+parentFolder;
         }
-        folderRepo.save(folder);
-        //model.addAttribute("folders", folder.getFolders());
-        model.addAttribute("folderName", folderName);
+    }
 
-        return "redirect:/folders/"+folderName;
+    @PostMapping("/delete/{folderName}")
+    public String deleteFolder(Model model
+            , @AuthenticationPrincipal User user
+            , @PathVariable String folderName) {
+        Folder folder = folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName);
+        folderRepo.deleteById(folder.getId());
+        return "redirect:/folders/"+folder.getParent().getName();
     }
 }
