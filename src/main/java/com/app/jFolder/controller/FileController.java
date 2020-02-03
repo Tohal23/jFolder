@@ -10,9 +10,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +66,7 @@ public class FileController {
     }
 
     @PostMapping("/rename/{fileName}")
-    public String renameFile(Model model
+    public String renameFile( Model model
             , @AuthenticationPrincipal User user
             , @RequestParam String newFileName
             , @PathVariable String fileName

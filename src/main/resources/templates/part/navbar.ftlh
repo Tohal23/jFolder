@@ -15,7 +15,7 @@
         </ul>
         <div class="navbar-text mr-3">${name}</div>
         <#if user??>
-            <#if !active>
+            <#if !active??>
                 <div class="navbar-text mr-3">Необходимо подтвердить почту.</div>
             </#if>
             <@l.logoutSubmit />

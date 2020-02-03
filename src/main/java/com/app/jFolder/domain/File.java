@@ -1,6 +1,7 @@
 package com.app.jFolder.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "file", indexes = {@Index(name = "idx_file_name", columnList = "file_name")})
