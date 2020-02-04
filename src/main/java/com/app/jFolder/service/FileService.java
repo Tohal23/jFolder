@@ -52,7 +52,7 @@ public class FileService {
             String resultFilename = uuidFile + "." + fileOriginalName;
             file_data.transferTo(new File(fileUploadPath + resultFilename));
 
-            file.setName(fileOriginalName);
+            file.setName(fileOriginalName.replaceAll(" ", ""));
             file.setSystemName(uuidFile + "." + fileOriginalName);
             file.setPath(fileUploadPath);
             file.setFolder(folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName));

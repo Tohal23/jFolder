@@ -59,6 +59,7 @@
                 <form action="/folders/rename/${folderName}" method="post">
                     <div class="modal-body">
                         <input type="text" name="newFolderName" class="form-control" value="${folderName}"/>
+                        <small class="form-text text-muted">You can't rename root folder.</small>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -82,6 +83,7 @@
                 </div>
                 <form action="/folders/delete/${folderName}" method="post">
                     <div class="modal-body">
+                        <p>You can't delete root folder.</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

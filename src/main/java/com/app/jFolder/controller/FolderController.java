@@ -42,7 +42,6 @@ public class FolderController {
         if (model.getAttribute("foldersTree") == null) {
             foldersTree = folderRepo.getFolderByUserUsername(user.getUsername());
             model.addAttribute("foldersTree", foldersTree);
-
         } else {
             foldersTree = (List<Folder>) model.getAttribute("foldersTree");
             assert foldersTree != null;
@@ -62,15 +61,13 @@ public class FolderController {
             , @RequestParam String newFolderName
             , @PathVariable String folderName
     ) {
-        Folder folder;
-        if (folderName != null) {
-            folder = folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName);
+        Folder folder = folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName);
+        if (!newFolderName.isEmpty() && folder != null && folder.getParent() != null) {
             folder.setName(newFolderName);
             folderRepo.save(folder);
             model.addAttribute("folderName", newFolderName);
             return "redirect:/folders/"+newFolderName;
         }
-
         return "redirect:/folders/root";
     }
 
@@ -80,9 +77,9 @@ public class FolderController {
             , @RequestParam String folderName
             , @PathVariable String parentFolder
     ) {
-        if (folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName) == null) {
+        if (folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName) == null && !folderName.isEmpty()) {
             Folder folder = new Folder();
-            folder.setName(folderName);
+            folder.setName(folderName.replaceAll(" ", ""));
             folder.setUser(user);
             if (!parentFolder.isEmpty()) {
                 folder.setParent(folderRepo.getFolderByUserUsernameAndName(user.getUsername(), parentFolder));
@@ -101,7 +98,10 @@ public class FolderController {
             , @AuthenticationPrincipal User user
             , @PathVariable String folderName) {
         Folder folder = folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName);
-        folderRepo.deleteById(folder.getId());
-        return "redirect:/folders/"+folder.getParent().getName();
+        if (folder != null && folder.getParent() != null) {
+            folderRepo.deleteById(folder.getId());
+            return "redirect:/folders/"+folder.getParent().getName();
+        }
+        return "redirect:/folders/"+folderName;
     }
 }

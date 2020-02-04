@@ -80,7 +80,7 @@ public class FileController {
             model.addAttribute("folderName", newFileName);
             return "redirect:/folders/"+file.getFolder().getName();
         }
-        return "";
+        return "redirect:/folders/root";
     }
 
 }

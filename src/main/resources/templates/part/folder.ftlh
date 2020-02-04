@@ -1,3 +1,4 @@
+    <#include "security.ftlh">
     <#assign filesCount = files?size>
     <#assign foldersCount = foldersChild?size>
     <nav aria-label="breadcrumb m-0">
@@ -8,18 +9,23 @@
         </ol>
     </nav>
     <div class="list-group list-group-flush">
-        <#if filesCount == 0 && foldersCount == 0>
-            <a href="" class="list-group-item list-group-item-action h6">...Nothing</a>
+        <#if filesCount == 0 && foldersCount == 0 && active??>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Hello ${name}!</strong> This folder is empty. Add new file!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
         </#if>
         <#list foldersChild as folder>
             <div>
-                <a href="/folders/${folder.name}" class="list-group-item list-group-item-action h6"><img src="img/folder.svg"> ${folder.name}</a>
+                <a href="/folders/${folder.name}" class="list-group-item list-group-item-action h6 border-bottom-0"><img src="img/folder.svg"> ${folder.name}</a>
             </div>
         </#list>
 
         <#list files as file>
             <div class="dropdown">
-                <a href="#" class="list-group-item list-group-item-action h6 dropdown-toggle" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a href="#" class="list-group-item list-group-item-action h6 dropdown-toggle " role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <img src="img/file.svg"> ${file.name}
                 </a>
                 <div class="dropdown-menu" style="width: 80%;" aria-labelledby="dropdownMenuLink">
@@ -83,4 +89,13 @@
             </div>
         </div>
     </#list>
+
+    <#if !active??>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Warning!</strong> You can't add file, need confirm your email.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </#if>
 

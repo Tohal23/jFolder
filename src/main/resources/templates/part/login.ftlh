@@ -1,7 +1,7 @@
 <#macro login path isRegisterForm>
 <div class="container h-100">
-    <div class="row">
-        <div class="container col align-self-center border">
+    <div class="row mt-5">
+        <div class="container col align-self-center border p-3">
         <form class="mx-auto vertical-align" action="${path}" method="post">
             <div class="form-group">
                 <label for="inputAddress">Login</label>
