@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost/jfolder
+    username: admin_jfolder
+    password: 123
+    generate-ddl: true
+  freemarker:
+    expose-request-attributes: true
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  mail:
+    host: smtp.yandex.ru
+    username: krivonosenko98@yandex.ru
+    password: # email's password
+    port: 465
+    protocol: smtps
+
+mail:
+  debug: true
+
+site:
+  domain: http://localhost:8080
+
+upload:
+  path: /home/anton/app/files
