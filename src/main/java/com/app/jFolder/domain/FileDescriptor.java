@@ -1,11 +1,10 @@
 package com.app.jFolder.domain;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "file", indexes = {@Index(name = "idx_file_name", columnList = "file_name")})
-public class File implements Comparable<File>{
+public class FileDescriptor implements Comparable<FileDescriptor>{
     @Id
     @GeneratedValue
     private Long id;
@@ -67,7 +66,7 @@ public class File implements Comparable<File>{
     }
 
     @Override
-    public int compareTo(File file) {
+    public int compareTo(FileDescriptor file) {
         if (this.name.compareTo(file.name) < 0) {
             return -1;
         } else if (this.name.compareTo(file.name) > 0) {

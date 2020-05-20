@@ -1,10 +1,6 @@
 package com.app.jFolder.domain;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.OnDelete;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +20,7 @@ public class Folder implements Comparable<Folder> {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", cascade = CascadeType.REMOVE)
     private Set<Folder> folders = new HashSet<>();
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "folder", cascade = CascadeType.REMOVE)
-    private Set<File> files = new HashSet<>();
+    private Set<FileDescriptor> files = new HashSet<>();
 
 
     public Long getId() {
@@ -67,11 +63,11 @@ public class Folder implements Comparable<Folder> {
         this.folders = folders;
     }
 
-    public Set<File> getFiles() {
+    public Set<FileDescriptor> getFiles() {
         return files;
     }
 
-    public void setFiles(Set<File> files) {
+    public void setFiles(Set<FileDescriptor> files) {
         this.files = files;
     }
 

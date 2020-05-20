@@ -22,6 +22,10 @@ public class CustomFolderRepositoryImp implements CustomFolderRepository {
 
     @Override
     public Folder getFolderByUserUsernameAndName(String userName, String name) {
-        return (Folder) em.createQuery("select f from folder f join usr u on u.id = f.user_id where u.username = " + userName + "and f.name = " + name).getResultStream().findFirst().get();
+        return (Folder) em.createQuery("select f " +
+                "                                 from folder f " +
+                "                                 join usr u " +
+                "                                   on u.id = f.user_id " +
+                "                                where u.username = " + userName + "and f.name = " + name).getResultStream().findFirst().get();
     }
 }

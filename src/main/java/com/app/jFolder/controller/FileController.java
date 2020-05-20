@@ -1,34 +1,29 @@
 package com.app.jFolder.controller;
 
-import com.app.jFolder.domain.File;
-import com.app.jFolder.domain.Folder;
 import com.app.jFolder.domain.User;
-import com.app.jFolder.repos.FileRepo;
 import com.app.jFolder.service.FileService;
 import org.apache.commons.io.IOUtils;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Controller
 @RequestMapping("file")
 public class FileController {
 
     private final FileService fileService;
-    private final FileRepo fileRepo;
 
-    public FileController(FileService fileService, FileRepo fileRepo) {
+    public FileController(FileService fileService) {
         this.fileService = fileService;
-        this.fileRepo = fileRepo;
     }
 
     @PostMapping("/add/{folderName}")
@@ -47,22 +42,27 @@ public class FileController {
     public String deleteFile(Model model,
                              @PathVariable String fileName,
                              @AuthenticationPrincipal User user) {
-        File file = fileRepo.findByFolderUserAndName(user, fileName);
-        fileRepo.deleteById(file.getId());
-        return "redirect:/folders/"+file.getFolder().getName();
+        String folderName = null;
+        try {
+            folderName = fileService.deleteFile(user, fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "redirect:/folders/"+folderName;
     }
 
-    @GetMapping(
-            value = "/get-file/{fileName}",
-            produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
-    )
-    public @ResponseBody byte[] getFile(Model model,
-                                        @PathVariable String fileName,
-                                        @AuthenticationPrincipal User user) throws IOException {
-        File file = fileRepo.findByFolderUserAndName(user, fileName);
-        String path = file.getPath() + file.getSystemName();
-        InputStream in =  new FileInputStream(path);
-        return IOUtils.toByteArray(in);
+
+    @RequestMapping(value = "/get-file/{fileName}", method = RequestMethod.GET)
+    public void getFile(HttpServletResponse response,
+                        @PathVariable String fileName,
+                        @AuthenticationPrincipal User user) throws IOException {
+        String path = fileService.getFilePath(user, fileName);
+        Path path1 = Paths.get(path);
+
+        response.setContentType(Files.probeContentType(path1));
+
+        response.setHeader("Content-Disposition", "attachment;filename="+fileName);
+        IOUtils.copy(new FileInputStream(path), response.getOutputStream());
     }
 
     @PostMapping("/rename/{fileName}")
@@ -71,16 +71,11 @@ public class FileController {
             , @RequestParam String newFileName
             , @PathVariable String fileName
     ) {
-        File file = fileRepo.findByFolderUserAndName(user, newFileName);
+        String folderFile = fileService.renameFile(user, fileName, newFileName);
 
-        if (fileName != null && newFileName != null && file == null) {
-            file = fileRepo.findByFolderUserAndName(user, fileName);
-            file.setName(newFileName);
-            fileRepo.save(file);
-            model.addAttribute("folderName", newFileName);
-            return "redirect:/folders/"+file.getFolder().getName();
+        if (folderFile != null) {
+            return "redirect:/folders/"+folderFile;
         }
         return "redirect:/folders/root";
     }
-
 }

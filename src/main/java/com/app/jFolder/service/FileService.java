@@ -1,5 +1,6 @@
 package com.app.jFolder.service;
 
+import com.app.jFolder.domain.FileDescriptor;
 import com.app.jFolder.domain.User;
 import com.app.jFolder.repos.FileRepo;
 import com.app.jFolder.repos.FolderRepo;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -29,7 +31,7 @@ public class FileService {
 
     public boolean addFile(MultipartFile file_data, User user, String folderName) throws IOException {
         if (file_data != null && !file_data.getOriginalFilename().isEmpty()) {
-            com.app.jFolder.domain.File file = new com.app.jFolder.domain.File();
+            FileDescriptor file = new FileDescriptor();
 
             String fileOriginalName = file_data.getOriginalFilename();
             String fileUploadPath = uploadPath+"/"+user.getUsername()+"/"+folderName+"/";
@@ -61,4 +63,34 @@ public class FileService {
             }
         return false;
     }
+
+    public String renameFile(User user, String fileName, String newFileName) {
+        FileDescriptor file = fileRepo.findByFolderUserAndName(user, newFileName);
+
+        if (fileName != null && newFileName != null && file == null) {
+            file = fileRepo.findByFolderUserAndName(user, fileName);
+            file.setName(newFileName);
+            fileRepo.save(file);
+            return file.getFolder().getName();
+        }
+        return null;
+    }
+
+    public String getFilePath(User user, String fileName) {
+        FileDescriptor file = fileRepo.findByFolderUserAndName(user, fileName);
+        return file.getPath() + file.getSystemName();
+    }
+
+    public String deleteFile(User user, String fileName) throws IOException {
+        FileDescriptor file = fileRepo.findByFolderUserAndName(user, fileName);
+        String folderName = file.getFolder().getName();
+        Path path = Paths.get(file.getPath()+file.getSystemName());
+
+        fileRepo.deleteById(file.getId());
+
+        Files.deleteIfExists(path);
+
+        return folderName;
+    }
+
 }

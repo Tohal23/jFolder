@@ -1,9 +1,9 @@
 package com.app.jFolder.repos.custom;
 
-import com.app.jFolder.domain.File;
+import com.app.jFolder.domain.FileDescriptor;
 
 public interface CustomFileRepository {
 
-    File getFileByNameAndFolderUserOrderByNumberDesc(String name, Long userId);
+    FileDescriptor getFileByNameAndFolderUserOrderByNumberDesc(String name, Long userId);
 
 }

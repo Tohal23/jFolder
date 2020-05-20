@@ -1,28 +1,19 @@
 package com.app.jFolder.controller;
 
-import com.app.jFolder.domain.File;
-import com.app.jFolder.domain.Folder;
 import com.app.jFolder.domain.User;
-import com.app.jFolder.repos.FolderRepo;
 import com.app.jFolder.service.FolderService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 @Controller
 @RequestMapping("folders")
 public class FolderController {
 
-    private final FolderRepo folderRepo;
     private final FolderService folderService;
 
-    public FolderController(FolderRepo folderRepo, FolderService folderService) {
-        this.folderRepo = folderRepo;
+    public FolderController(FolderService folderService) {
         this.folderService = folderService;
     }
 
@@ -31,26 +22,10 @@ public class FolderController {
             , @AuthenticationPrincipal User user
             , @PathVariable String folderName
     ) {
-        Folder folder = folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName);
-        List<Folder> foldersTree;
-        List<Folder> foldersChild = new ArrayList<>(folder.getFolders());
-        Collections.sort(foldersChild);
-
-        List<File> files = new ArrayList<>(folder.getFiles());
-        Collections.sort(files);
-
-        if (model.getAttribute("foldersTree") == null) {
-            foldersTree = folderRepo.getFolderByUserUsername(user.getUsername());
-            model.addAttribute("foldersTree", foldersTree);
-        } else {
-            foldersTree = (List<Folder>) model.getAttribute("foldersTree");
-            assert foldersTree != null;
-        }
-
-        model.addAttribute("foldersWay", folderService.getWayToHeadInTree(foldersTree, folderName));
-        model.addAttribute("foldersChild", foldersChild);
+        model.addAttribute("foldersWay", folderService.getWayToHeadInTree(user, folderName));
+        model.addAttribute("foldersChild", folderService.getFoldersChild(user, folderName));
         model.addAttribute("folderName", folderName);
-        model.addAttribute("files", files);
+        model.addAttribute("files", folderService.getFiles(user, folderName));
 
         return "startPage";
     }
@@ -61,11 +36,10 @@ public class FolderController {
             , @RequestParam String newFolderName
             , @PathVariable String folderName
     ) {
-        Folder folder = folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName);
-        if (!newFolderName.isEmpty() && folder != null && folder.getParent() != null) {
-            folder.setName(newFolderName);
-            folderRepo.save(folder);
-            model.addAttribute("folderName", newFolderName);
+        boolean isRenameFolder = folderService.renameFolder(user, folderName, newFolderName);
+
+        if (isRenameFolder) {
+            model.addAttribute("folderName", folderName);
             return "redirect:/folders/"+newFolderName;
         }
         return "redirect:/folders/root";
@@ -77,15 +51,9 @@ public class FolderController {
             , @RequestParam String folderName
             , @PathVariable String parentFolder
     ) {
-        if (folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName) == null && !folderName.isEmpty()) {
-            Folder folder = new Folder();
-            folder.setName(folderName.replaceAll(" ", ""));
-            folder.setUser(user);
-            if (!parentFolder.isEmpty()) {
-                folder.setParent(folderRepo.getFolderByUserUsernameAndName(user.getUsername(), parentFolder));
-            }
-            folderRepo.save(folder);
-            //model.addAttribute("folders", folder.getFolders());
+        boolean isCreateNewFolder = folderService.addFolder(user, folderName, parentFolder);
+
+        if (isCreateNewFolder) {
             model.addAttribute("folderName", folderName);
             return "redirect:/folders/"+folderName;
         } else {
@@ -97,11 +65,10 @@ public class FolderController {
     public String deleteFolder(Model model
             , @AuthenticationPrincipal User user
             , @PathVariable String folderName) {
-        Folder folder = folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName);
-        if (folder != null && folder.getParent() != null) {
-            folderRepo.deleteById(folder.getId());
-            return "redirect:/folders/"+folder.getParent().getName();
+        String parentFolderName = folderService.deleteFolder(user, folderName);
+        if (parentFolderName != null) {
+            return parentFolderName;
         }
-        return "redirect:/folders/"+folderName;
+        return folderName;
     }
 }

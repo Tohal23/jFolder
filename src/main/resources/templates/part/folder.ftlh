@@ -50,6 +50,7 @@
                         </button>
                     </div>
                     <form action="/file/delete/${file.name}" method="post">
+                        <input type="hidden" name="_METHOD" value="DELETE"/>
                         <div class="modal-body">
                             <p>Delete file?</p>
                         </div>
@@ -76,6 +77,7 @@
                         </button>
                     </div>
                     <form action="/file/rename/${file.name}" method="post">
+                        <input type="hidden" name="_METHOD" value="PUT"/>
                         <div class="modal-body">
                             <input type="text" name="newFileName" class="form-control" value="${file.name}"/>
                         </div>
@@ -98,4 +100,3 @@
             </button>
         </div>
     </#if>
-

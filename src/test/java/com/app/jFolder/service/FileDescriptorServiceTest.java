@@ -1,15 +1,13 @@
 package com.app.jFolder.service;
 
-import com.app.jFolder.domain.File;
+import com.app.jFolder.domain.FileDescriptor;
 import com.app.jFolder.domain.Folder;
 import com.app.jFolder.domain.User;
 import com.app.jFolder.repos.FileRepo;
 import com.app.jFolder.repos.FolderRepo;
-import com.app.jFolder.repos.UserRepo;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-class FileServiceTest {
+class FileDescriptorServiceTest {
 
     @Autowired
     private FileService fileService;
@@ -37,7 +35,7 @@ class FileServiceTest {
     private FolderRepo folderRepo;
 
     @Test
-    void addFileTest() {
+    void addFileTest() throws IOException {
         AtomicBoolean resultAdd = new AtomicBoolean(false);
 
         MockMultipartFile file = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
@@ -48,12 +46,9 @@ class FileServiceTest {
 
         Mockito.doReturn(new Folder()).when(folderRepo).getFolderByUserUsernameAndName("admin", "root");
 
-        Throwable thrown = assertThrows(IOException.class, () -> {
-            resultAdd.set(fileService.addFile(file, user, "root"));
-        });
-        Assert.assertNotNull(thrown.getMessage());
-        Assert.assertFalse(resultAdd.get());
+        resultAdd.set(fileService.addFile(file, user, "root"));
+        Assert.assertTrue(resultAdd.get());
 
-        Mockito.verify(fileRepo, Mockito.times(1)).save(ArgumentMatchers.any(File.class));
+        Mockito.verify(fileRepo, Mockito.times(1)).save(ArgumentMatchers.any(FileDescriptor.class));
     }
 }

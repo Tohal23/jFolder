@@ -1,6 +1,6 @@
 package com.app.jFolder.repos.custom.impl;
 
-import com.app.jFolder.domain.File;
+import com.app.jFolder.domain.FileDescriptor;
 import com.app.jFolder.repos.custom.CustomFileRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +17,7 @@ public class CustomFileRepositoryImp implements CustomFileRepository {
     }
 
     @Override
-    public File getFileByNameAndFolderUserOrderByNumberDesc (String name, Long userId) {
+    public FileDescriptor getFileByNameAndFolderUserOrderByNumberDesc (String name, Long userId) {
         Query query = em
                 .createQuery( "select f.* " +
                                        "from file f " +
@@ -28,6 +28,6 @@ public class CustomFileRepositoryImp implements CustomFileRepository {
                                       "order by f.number desc");
         query.setParameter("file_name", name);
         query.setParameter("id_user", userId);
-        return (File) query.getResultStream().findFirst().get();
+        return (FileDescriptor) query.getResultStream().findFirst().get();
     }
 }
