@@ -15,7 +15,7 @@ spring:
   mail:
     host: smtp.yandex.ru
     username: krivonosenko98@yandex.ru
-    password: # email's password
+    password: 88003050573Ak
     port: 465
     protocol: smtps
 

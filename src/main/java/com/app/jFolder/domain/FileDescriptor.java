@@ -1,6 +1,7 @@
 package com.app.jFolder.domain;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "file", indexes = {@Index(name = "idx_file_name", columnList = "file_name")})
@@ -10,12 +11,11 @@ public class FileDescriptor implements Comparable<FileDescriptor>{
     private Long id;
     @Column(name = "file_name")
     private String name;
-    @Column(name = "file_system_name")
-    private String systemName;
-    private Integer number;
     @ManyToOne
     private Folder folder;
-    private String path;
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<FileVersion> fileVersionSet;
+
 
     public Long getId() {
         return id;
@@ -41,28 +41,12 @@ public class FileDescriptor implements Comparable<FileDescriptor>{
         this.name = name;
     }
 
-    public String getPath() {
-        return path;
+    public Set<FileVersion> getFileVersionSet() {
+        return fileVersionSet;
     }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getSystemName() {
-        return systemName;
-    }
-
-    public void setSystemName(String systemName) {
-        this.systemName = systemName;
-    }
-
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
+    public void setFileVersionSet(Set<FileVersion> fileVersionSet) {
+        this.fileVersionSet = fileVersionSet;
     }
 
     @Override

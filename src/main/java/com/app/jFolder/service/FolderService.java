@@ -4,6 +4,7 @@ import com.app.jFolder.domain.FileDescriptor;
 import com.app.jFolder.domain.Folder;
 import com.app.jFolder.domain.User;
 import com.app.jFolder.repos.FolderRepo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import java.util.List;
 @Service
 public class FolderService {
 
+    @Value("${upload.path}")
+    private String uploadPath;
     private final FolderRepo folderRepo;
 
     public FolderService(FolderRepo folderRepo) {
@@ -46,6 +49,13 @@ public class FolderService {
         } else {
             return false;
         }
+    }
+
+    public String getPath(User user, String folderName) {
+        if (folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName) != null) {
+            return uploadPath+"/"+user.getUsername()+"/"+folderName+"/";
+        }
+        return null;
     }
 
     public String deleteFolder(User user, String folderName) {

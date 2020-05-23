@@ -38,13 +38,13 @@ public class FileController {
         return "redirect:/folders/"+folderName;
     }
 
-    @PostMapping("/delete/{fileName}")
+    @PostMapping("/delete/{folderName}/{fileName}")
     public String deleteFile(Model model,
                              @PathVariable String fileName,
                              @AuthenticationPrincipal User user) {
         String folderName = null;
         try {
-            folderName = fileService.deleteFile(user, fileName);
+            folderName = fileService.deleteFile(user, folderName, fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,11 +52,13 @@ public class FileController {
     }
 
 
-    @RequestMapping(value = "/get-file/{fileName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/get-file/{folderName}/{fileName}/{numberVersion}", method = RequestMethod.GET)
     public void getFile(HttpServletResponse response,
+                        @PathVariable String folderName,
                         @PathVariable String fileName,
+                        @PathVariable Integer numberVersion,
                         @AuthenticationPrincipal User user) throws IOException {
-        String path = fileService.getFilePath(user, fileName);
+        String path = fileService.getFilePath(user, folderName, fileName, numberVersion);
         Path path1 = Paths.get(path);
 
         response.setContentType(Files.probeContentType(path1));
@@ -65,13 +67,14 @@ public class FileController {
         IOUtils.copy(new FileInputStream(path), response.getOutputStream());
     }
 
-    @PostMapping("/rename/{fileName}")
+    @PostMapping("/rename/{folderName}/{fileName}")
     public String renameFile( Model model
             , @AuthenticationPrincipal User user
             , @RequestParam String newFileName
+            , @PathVariable String folderName
             , @PathVariable String fileName
     ) {
-        String folderFile = fileService.renameFile(user, fileName, newFileName);
+        String folderFile = fileService.renameFile(user, folderName, fileName, newFileName);
 
         if (folderFile != null) {
             return "redirect:/folders/"+folderFile;

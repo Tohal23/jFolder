@@ -1,74 +1,55 @@
 package com.app.jFolder.service;
 
 import com.app.jFolder.domain.FileDescriptor;
+import com.app.jFolder.domain.FileVersion;
+import com.app.jFolder.domain.Folder;
 import com.app.jFolder.domain.User;
 import com.app.jFolder.repos.FileRepo;
 import com.app.jFolder.repos.FolderRepo;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.Set;
 
 @Service
 public class FileService {
 
     private final FileRepo fileRepo;
     private final FolderRepo folderRepo;
-    @Value("${upload.path}")
-    private String uploadPath;
+    private final FileVersionService fileVersionService;
+    private final FolderService folderService;
 
-    public FileService(FileRepo fileRepo, FolderRepo folderRepo) {
+    public FileService(FileRepo fileRepo, FolderRepo folderRepo, FileVersionService fileVersionService, FolderService folderService) {
         this.fileRepo = fileRepo;
         this.folderRepo = folderRepo;
+        this.fileVersionService = fileVersionService;
+        this.folderService = folderService;
     }
 
     public boolean addFile(MultipartFile file_data, User user, String folderName) throws IOException {
-        if (file_data != null && !file_data.getOriginalFilename().isEmpty()) {
-            FileDescriptor file = new FileDescriptor();
-
-            String fileOriginalName = file_data.getOriginalFilename();
-            String fileUploadPath = uploadPath+"/"+user.getUsername()+"/"+folderName+"/";
-            Path uploadDir = Paths.get(fileUploadPath);
-
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
+        String fileOriginalName = file_data.getOriginalFilename();
+        if (!fileOriginalName.isEmpty()) {
+            FileDescriptor file = fileRepo.findByFolderUserAndNameAndFolder_Name(user, fileOriginalName, folderName);
+            if (file == null) {
+                file = new FileDescriptor();
+                file.setName(fileOriginalName);
+                file.setFolder(folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName));
+                fileRepo.save(file);
             }
-
-            if (fileRepo.findByFolderUserAndName(user, fileOriginalName) != null) {
-                Integer numberFile = fileRepo.getFileByNameAndFolderUserOrderByNumberDesc(fileOriginalName, user.getId()).getNumber() + 1;
-               file.setNumber(numberFile);
-               fileOriginalName = fileOriginalName + "("+numberFile+")";
-
-            } else {
-                file.setNumber(0);
-            }
-
-            String uuidFile = UUID.randomUUID().toString();
-            String resultFilename = uuidFile + "." + fileOriginalName;
-            file_data.transferTo(new File(fileUploadPath + resultFilename));
-
-            file.setName(fileOriginalName.replaceAll(" ", ""));
-            file.setSystemName(uuidFile + "." + fileOriginalName);
-            file.setPath(fileUploadPath);
-            file.setFolder(folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName));
-            fileRepo.save(file);
-            return true;
-            }
+            return fileVersionService.addNewVersion(file, file_data, user, folderName);
+        }
         return false;
     }
 
-    public String renameFile(User user, String fileName, String newFileName) {
-        FileDescriptor file = fileRepo.findByFolderUserAndName(user, newFileName);
+    public String renameFile(User user, String folderName, String fileName, String newFileName) {
+        FileDescriptor file = fileRepo.findByFolderUserAndNameAndFolder_Name(user, newFileName, folderName);
 
         if (fileName != null && newFileName != null && file == null) {
-            file = fileRepo.findByFolderUserAndName(user, fileName);
+            file = fileRepo.findByFolderUserAndNameAndFolder_Name(user, fileName, folderName);
             file.setName(newFileName);
             fileRepo.save(file);
             return file.getFolder().getName();
@@ -76,19 +57,25 @@ public class FileService {
         return null;
     }
 
-    public String getFilePath(User user, String fileName) {
-        FileDescriptor file = fileRepo.findByFolderUserAndName(user, fileName);
-        return file.getPath() + file.getSystemName();
+    public String getFilePath(User user, String folderName, String fileName, Integer numberVersion) {
+        FileDescriptor file = fileRepo.findByFolderUserAndNameAndFolder_Name(user, folderName, fileName);
+        return fileVersionService.getPathVersion(file, numberVersion);
     }
 
-    public String deleteFile(User user, String fileName) throws IOException {
-        FileDescriptor file = fileRepo.findByFolderUserAndName(user, fileName);
-        String folderName = file.getFolder().getName();
-        Path path = Paths.get(file.getPath()+file.getSystemName());
+    public String deleteFile(User user, String folderName, String fileName) throws IOException {
+        FileDescriptor file = fileRepo.findByFolderUserAndNameAndFolder_Name(user, folderName, fileName);
+        Set<FileVersion> fileVersionSet = file.getFileVersionSet();
+
+        for (FileVersion fileVersion : fileVersionSet) {
+            String pathStr = fileVersion.getPath();
+            Path path = Paths.get(pathStr);
+            Files.deleteIfExists(path);
+        }
+
+        Path path = Paths.get(folderService.getPath(user, folderName) + "/" + fileName);
+        Files.deleteIfExists(path);
 
         fileRepo.deleteById(file.getId());
-
-        Files.deleteIfExists(path);
 
         return folderName;
     }

@@ -6,5 +6,6 @@ import com.app.jFolder.repos.custom.CustomFileRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FileRepo extends JpaRepository<FileDescriptor, Long>, CustomFileRepository {
-    FileDescriptor findByFolderUserAndName(User user, String name);
+    FileDescriptor findByFolderUserAndNameAndFolder_Name(User user, String name, String folder_name);
+
 }
