@@ -3,13 +3,14 @@ spring:
     url: jdbc:postgresql://localhost/jfolder
     username: admin_jfolder
     password: 123
-    generate-ddl: true
+ #   generate-ddl: true
   freemarker:
     expose-request-attributes: true
   jpa:
 #    hibernate:
-#      ddl-auto: create
+#      ddl-auto: create-drop
     properties:
+      hibernate:
         jdbc:
           lob:
             non_contextual_creation: true

@@ -7,12 +7,15 @@ import com.app.jFolder.domain.User;
 import com.app.jFolder.repos.FileRepo;
 import com.app.jFolder.repos.FolderRepo;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Set;
 
 @Service
@@ -45,12 +48,16 @@ public class FileService {
         return false;
     }
 
-    public String renameFile(User user, String folderName, String fileName, String newFileName) {
+    public String renameFile(User user, String folderName, String fileName, String newFileName) throws IOException {
         FileDescriptor file = fileRepo.findByFolderUserAndNameAndFolder_Name(user, newFileName, folderName);
 
         if (fileName != null && newFileName != null && file == null) {
             file = fileRepo.findByFolderUserAndNameAndFolder_Name(user, fileName, folderName);
             file.setName(newFileName);
+            String pathFolder = folderService.getPath(user, folderName);
+            Path source = Paths.get(pathFolder + "/" + StringUtils.stripFilenameExtension(fileName));
+            Files.move(source, source.resolveSibling(StringUtils.stripFilenameExtension(newFileName)),
+                    StandardCopyOption.REPLACE_EXISTING);
             fileRepo.save(file);
             return file.getFolder().getName();
         }
@@ -63,17 +70,20 @@ public class FileService {
     }
 
     public String deleteFile(User user, String folderName, String fileName) throws IOException {
-        FileDescriptor file = fileRepo.findByFolderUserAndNameAndFolder_Name(user, folderName, fileName);
+        FileDescriptor file = fileRepo.findByFolderUserAndNameAndFolder_Name(user, fileName, folderName);
         Set<FileVersion> fileVersionSet = file.getFileVersionSet();
 
-        for (FileVersion fileVersion : fileVersionSet) {
-            String pathStr = fileVersion.getPath();
-            Path path = Paths.get(pathStr);
-            Files.deleteIfExists(path);
-        }
-
-        Path path = Paths.get(folderService.getPath(user, folderName) + "/" + fileName);
-        Files.deleteIfExists(path);
+        FileSystemUtils.deleteRecursively(Paths.get(folderService.getPath(user, folderName) + "/"
+                + StringUtils.stripFilenameExtension(fileName)));
+//
+//        for (FileVersion fileVersion : fileVersionSet) {
+//            String pathStr = fileVersion.getPath() + fileVersion.getSystemName();
+//            Path path = Paths.get(pathStr);
+//            Files.deleteIfExists(path);
+//        }
+//
+//        Path path = Paths.get(folderService.getPath(user, folderName) + "/" + fileName);
+//        Files.deleteIfExists(path);
 
         fileRepo.deleteById(file.getId());
 

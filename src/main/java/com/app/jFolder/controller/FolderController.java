@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @Controller
 @RequestMapping("folders")
 public class FolderController {
@@ -35,7 +37,7 @@ public class FolderController {
             , @AuthenticationPrincipal User user
             , @RequestParam String newFolderName
             , @PathVariable String folderName
-    ) {
+    ) throws IOException {
         boolean isRenameFolder = folderService.renameFolder(user, folderName, newFolderName);
 
         if (isRenameFolder) {
@@ -64,7 +66,7 @@ public class FolderController {
     @PostMapping("/delete/{folderName}")
     public String deleteFolder(Model model
             , @AuthenticationPrincipal User user
-            , @PathVariable String folderName) {
+            , @PathVariable String folderName) throws IOException {
         String parentFolderName = folderService.deleteFolder(user, folderName);
         if (parentFolderName != null) {
             return parentFolderName;

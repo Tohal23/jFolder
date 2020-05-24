@@ -49,7 +49,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form action="/file/delete/${file.name}" method="post">
+                    <form action="/file/delete/${folderName}/${file.name}" method="post">
                         <input type="hidden" name="_METHOD" value="DELETE"/>
                         <div class="modal-body">
                             <p>Delete file?</p>
@@ -76,7 +76,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form action="/file/rename/${file.name}" method="post">
+                    <form action="/file/rename/${folderName}/${file.name}" method="post">
                         <input type="hidden" name="_METHOD" value="PUT"/>
                         <div class="modal-body">
                             <input type="text" name="newFileName" class="form-control" value="${file.name}"/>

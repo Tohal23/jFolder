@@ -40,9 +40,9 @@ public class FileController {
 
     @PostMapping("/delete/{folderName}/{fileName}")
     public String deleteFile(Model model,
+                             @PathVariable String folderName,
                              @PathVariable String fileName,
                              @AuthenticationPrincipal User user) {
-        String folderName = null;
         try {
             folderName = fileService.deleteFile(user, folderName, fileName);
         } catch (IOException e) {
@@ -73,7 +73,7 @@ public class FileController {
             , @RequestParam String newFileName
             , @PathVariable String folderName
             , @PathVariable String fileName
-    ) {
+    ) throws IOException {
         String folderFile = fileService.renameFile(user, folderName, fileName, newFileName);
 
         if (folderFile != null) {

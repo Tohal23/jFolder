@@ -29,22 +29,24 @@ public class FileVersionService {
 
     public boolean addNewVersion(FileDescriptor file, MultipartFile file_data, User user, String folderName) throws IOException {
         FileVersion fileVersion = new FileVersion();
+        FileVersion lastVersion = fileVersionRepo.findByFileAndLastIsTrue(file);
 
         String fileOriginalName = file_data.getOriginalFilename();
         String fileUploadPath = uploadPath+"/"+user.getUsername()+"/"+folderName
-                +"/"+StringUtils.getFilename(fileOriginalName)+"/";
+                +"/"+StringUtils.stripFilenameExtension(fileOriginalName)+"/";
         Path uploadDir = Paths.get(fileUploadPath);
 
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
         }
 
-        String uuidFileName = UUID.randomUUID().toString() + StringUtils.getFilenameExtension(fileOriginalName);
-        file_data.transferTo(new File(fileUploadPath + uuidFileName));
+        String uuidFileName = UUID.randomUUID().toString() + "." + StringUtils.getFilenameExtension(fileOriginalName);
+        file_data.transferTo(new File(fileUploadPath  + uuidFileName));
 
         fileVersion.setSystemName(uuidFileName);
         fileVersion.setFile(file);
         fileVersion.setPath(fileUploadPath);
+        fileVersion.setNumber(lastVersion != null? lastVersion.getNumber() : 0);
         fileVersion.setLast(true);
         fileVersionRepo.save(fileVersion);
 

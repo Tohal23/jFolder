@@ -13,9 +13,17 @@ public class FileDescriptor implements Comparable<FileDescriptor>{
     private String name;
     @ManyToOne
     private Folder folder;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "file")
     private Set<FileVersion> fileVersionSet;
 
+    public FileDescriptor(String name, Folder folder, Set<FileVersion> fileVersionSet) {
+        this.name = name;
+        this.folder = folder;
+        this.fileVersionSet = fileVersionSet;
+    }
+
+    public FileDescriptor() {
+    }
 
     public Long getId() {
         return id;

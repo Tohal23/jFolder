@@ -4,6 +4,6 @@ import com.app.jFolder.domain.FileDescriptor;
 
 public interface CustomFileRepository {
 
-    FileDescriptor getFileByNameAndFolderUserOrderByNumberDesc(String name, Long userId);
+   // FileDescriptor getFileByNameAndFolderUserOrderByNumberDesc(String name, Long userId);
 
 }

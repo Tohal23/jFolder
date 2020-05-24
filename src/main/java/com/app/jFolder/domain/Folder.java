@@ -22,6 +22,16 @@ public class Folder implements Comparable<Folder> {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "folder", cascade = CascadeType.REMOVE)
     private Set<FileDescriptor> files = new HashSet<>();
 
+    public Folder(Folder parent, User user, String name, Set<Folder> folders, Set<FileDescriptor> files) {
+        this.parent = parent;
+        this.user = user;
+        this.name = name;
+        this.folders = folders;
+        this.files = files;
+    }
+
+    public Folder() {
+    }
 
     public Long getId() {
         return id;

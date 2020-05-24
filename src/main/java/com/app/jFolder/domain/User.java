@@ -20,14 +20,25 @@ public class User implements UserDetails {
     @NotBlank(message = "Password cannot be empty")
     private String password;
     @Transient
-    @NotBlank(message = "Password confirmation cannot be empty")
     private String password2;
     private boolean active;
-
     @Email(message = "Email is not correct")
     @NotBlank(message = "Email cannot be empty")
     private String email;
     private String activationCode;
+
+    public User(@NotBlank(message = "Username cannot be empty") String username,
+                @NotBlank(message = "Password cannot be empty") String password,
+                boolean active,
+                @Email(message = "Email is not correct") @NotBlank(message = "Email cannot be empty") String email) {
+        this.username = username;
+        this.password = password;
+        this.active = active;
+        this.email = email;
+    }
+
+    public User() {
+    }
 
     public Long getId() {
         return id;

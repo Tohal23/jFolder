@@ -10,13 +10,25 @@ public class FileVersion {
     private Long id;
     @Column(name = "file_system_name")
     private String systemName;
-    @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer number;
     private String path;
     @ManyToOne
     private FileDescriptor file;
     private boolean last;
     private String hash_file;
+
+    public FileVersion(String systemName, String path,
+                       FileDescriptor file, boolean last,
+                       String hash_file) {
+        this.systemName = systemName;
+        this.path = path;
+        this.file = file;
+        this.last = last;
+        this.hash_file = hash_file;
+    }
+
+    public FileVersion() {
+    }
 
     public Long getId() {
         return id;

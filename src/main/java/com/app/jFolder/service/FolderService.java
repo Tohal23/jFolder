@@ -6,7 +6,14 @@ import com.app.jFolder.domain.User;
 import com.app.jFolder.repos.FolderRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
+import org.springframework.util.StringUtils;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -58,19 +65,24 @@ public class FolderService {
         return null;
     }
 
-    public String deleteFolder(User user, String folderName) {
+    public String deleteFolder(User user, String folderName) throws IOException {
         Folder folder = folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName);
         if (folder != null && folder.getParent() != null) {
+            FileSystemUtils.deleteRecursively(Paths.get(getPath(user, folderName)));
             folderRepo.deleteById(folder.getId());
             return "redirect:/folders/"+folder.getParent().getName();
         }
         return null;
     }
 
-    public boolean renameFolder(User user, String folderName, String newFolderName) {
+    public boolean renameFolder(User user, String folderName, String newFolderName) throws IOException {
         Folder folder = folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName);
         if (!newFolderName.isEmpty() && folder != null && folder.getParent() != null) {
             folder.setName(newFolderName);
+            String pathFolder = getPath(user, folderName);
+            Path source = Paths.get(pathFolder);
+            Files.move(source, source.resolveSibling(newFolderName),
+                    StandardCopyOption.REPLACE_EXISTING);
             folderRepo.save(folder);
             return true;
         }

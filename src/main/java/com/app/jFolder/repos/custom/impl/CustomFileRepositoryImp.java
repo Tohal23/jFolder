@@ -16,18 +16,18 @@ public class CustomFileRepositoryImp implements CustomFileRepository {
         this.em = em;
     }
 
-    @Override
-    public FileDescriptor getFileByNameAndFolderUserOrderByNumberDesc (String name, Long userId) {
-        Query query = em
-                .createQuery( "select f.* " +
-                                       "from file f " +
-                                       "join folder f1" +
-                                       "  on f1.id = f.folder_id" +
-                                      "where f.file_name = :file_name " +
-                                      "  and f1.idUser = :id_user " +
-                                      "order by f.number desc");
-        query.setParameter("file_name", name);
-        query.setParameter("id_user", userId);
-        return (FileDescriptor) query.getResultStream().findFirst().get();
-    }
+//    @Override
+//    public FileDescriptor getFileByNameAndFolderUserOrderByNumberDesc (String name, Long userId) {
+//        Query query = em
+//                .createQuery( "select f.* " +
+//                                       "from file f " +
+//                                       "join folder f1" +
+//                                       "  on f1.id = f.folder_id" +
+//                                      "where f.file_name = :file_name " +
+//                                      "  and f1.idUser = :id_user " +
+//                                      "order by f.number desc");
+//        query.setParameter("file_name", name);
+//        query.setParameter("id_user", userId);
+//        return (FileDescriptor) query.getResultStream().findFirst().get();
+//    }
 }
