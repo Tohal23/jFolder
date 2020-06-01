@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 
 @Controller
 @RequestMapping("file")
@@ -26,12 +27,21 @@ public class FileController {
         this.fileService = fileService;
     }
 
+    @GetMapping("/{fileName}")
+    public String fileVersionsPage(Model model
+            , @AuthenticationPrincipal User user
+            , @PathVariable String fileName
+    ) {
+
+        return "startPage";
+    }
+
     @PostMapping("/add/{folderName}")
     public String addFile(Model model,
                           @PathVariable String folderName,
                           @AuthenticationPrincipal User user,
                           @RequestParam("file") MultipartFile file_data
-                          ) throws IOException {
+                          ) throws IOException, NoSuchAlgorithmException {
 
         fileService.addFile(file_data, user, folderName);
 
@@ -50,7 +60,6 @@ public class FileController {
         }
         return "redirect:/folders/"+folderName;
     }
-
 
     @RequestMapping(value = "/get-file/{folderName}/{fileName}/{numberVersion}", method = RequestMethod.GET)
     public void getFile(HttpServletResponse response,

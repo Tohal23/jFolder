@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
 @Service
@@ -33,7 +34,7 @@ public class FileService {
         this.folderService = folderService;
     }
 
-    public boolean addFile(MultipartFile file_data, User user, String folderName) throws IOException {
+    public boolean addFile(MultipartFile file_data, User user, String folderName) throws IOException, NoSuchAlgorithmException {
         String fileOriginalName = file_data.getOriginalFilename();
         if (!fileOriginalName.isEmpty()) {
             FileDescriptor file = fileRepo.findByFolderUserAndNameAndFolder_Name(user, fileOriginalName, folderName);

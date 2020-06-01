@@ -59,12 +59,6 @@ public class FileDescriptor implements Comparable<FileDescriptor>{
 
     @Override
     public int compareTo(FileDescriptor file) {
-        if (this.name.compareTo(file.name) < 0) {
-            return -1;
-        } else if (this.name.compareTo(file.name) > 0) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return Integer.compare(this.name.compareTo(file.name), 0);
     }
 }

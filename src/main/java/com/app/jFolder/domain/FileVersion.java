@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "file_version")
-public class FileVersion {
+public class FileVersion implements Comparable<FileVersion> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -84,5 +84,10 @@ public class FileVersion {
 
     public void setHash_file(String hash_file) {
         this.hash_file = hash_file;
+    }
+
+    @Override
+    public int compareTo(FileVersion o) {
+        return Integer.compare(this.number.compareTo(o.number), 0);
     }
 }
