@@ -6,6 +6,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,14 +28,6 @@ public class FileController {
         this.fileService = fileService;
     }
 
-    @GetMapping("/{fileName}")
-    public String fileVersionsPage(Model model
-            , @AuthenticationPrincipal User user
-            , @PathVariable String fileName
-    ) {
-
-        return "startPage";
-    }
 
     @PostMapping("/add/{folderName}")
     public String addFile(Model model,
@@ -42,7 +35,6 @@ public class FileController {
                           @AuthenticationPrincipal User user,
                           @RequestParam("file") MultipartFile file_data
                           ) throws IOException, NoSuchAlgorithmException {
-
         fileService.addFile(file_data, user, folderName);
 
         return "redirect:/folders/"+folderName;
@@ -62,7 +54,7 @@ public class FileController {
     }
 
     @RequestMapping(value = "/get-file/{folderName}/{fileName}/{numberVersion}", method = RequestMethod.GET)
-    public void getFile(HttpServletResponse response,
+    public void getFileByNumber(HttpServletResponse response,
                         @PathVariable String folderName,
                         @PathVariable String fileName,
                         @PathVariable Integer numberVersion,
@@ -72,7 +64,25 @@ public class FileController {
 
         response.setContentType(Files.probeContentType(path1));
 
-        response.setHeader("Content-Disposition", "attachment;filename="+fileName);
+        response.setHeader("Content-Disposition", "attachment;filename="+ fileName.split("\\.")[0]
+                +"-version("+numberVersion+")."
+                + StringUtils.getFilenameExtension(path));
+        IOUtils.copy(new FileInputStream(path), response.getOutputStream());
+    }
+
+    @RequestMapping(value = "/get-file/{folderName}/{fileName}/last", method = RequestMethod.GET)
+    public void getFileLastVersion(HttpServletResponse response,
+                                @PathVariable String folderName,
+                                @PathVariable String fileName,
+                                @AuthenticationPrincipal User user) throws IOException {
+        String path = fileService.getFilePathLastVersion(user, folderName, fileName);
+        Path path1 = Paths.get(path);
+
+        response.setContentType(Files.probeContentType(path1));
+
+        response.setHeader("Content-Disposition", "attachment;filename="+ fileName.split("\\.")[0]
+                +"-last-version."
+                + StringUtils.getFilenameExtension(path));
         IOUtils.copy(new FileInputStream(path), response.getOutputStream());
     }
 

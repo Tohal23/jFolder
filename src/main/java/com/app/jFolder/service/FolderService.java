@@ -3,6 +3,7 @@ package com.app.jFolder.service;
 import com.app.jFolder.domain.FileDescriptor;
 import com.app.jFolder.domain.Folder;
 import com.app.jFolder.domain.User;
+import com.app.jFolder.dto.FileDescriptorDto;
 import com.app.jFolder.repos.FolderRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FolderService {
@@ -96,11 +98,11 @@ public class FolderService {
         return foldersChild;
     }
 
-    public List<FileDescriptor> getFiles(User user, String folderName) {
+    public List<FileDescriptorDto> getFiles(User user, String folderName) {
         Folder folder = folderRepo.getFolderByUserUsernameAndName(user.getUsername(), folderName);
         List<FileDescriptor> files = new ArrayList<>(folder.getFiles());
         Collections.sort(files);
-        return files;
+        return files.stream().map(FileDescriptorDto::new).collect(Collectors.toList());
     }
 
 }

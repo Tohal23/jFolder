@@ -17,9 +17,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -35,7 +34,7 @@ class FileDescriptorServiceTest {
     private FolderRepo folderRepo;
 
     @Test
-    void addFileTest() throws IOException {
+    void addFileTest() throws IOException, NoSuchAlgorithmException {
         AtomicBoolean resultAdd = new AtomicBoolean(false);
 
         MockMultipartFile file = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());

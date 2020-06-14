@@ -19,20 +19,24 @@
         </#if>
         <#list foldersChild as folder>
             <div>
-                <a href="/folders/${folder.name}" class="list-group-item list-group-item-action h6 border-bottom-0"><img src="img/folder.svg"> ${folder.name}</a>
+                <a href="/folders/${folder.name}" class="m-0 border-top-0 border-left-0
+                list-group-item list-group-item-action h6 border-bottom-0"><img src="img/folder.svg"> ${folder.name}</a>
             </div>
         </#list>
 
         <#list files as file>
             <div class="dropdown">
-                <a href="#" class="list-group-item list-group-item-action h6 dropdown-toggle " role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a href="#" class="m-0 list-group-item list-group-item-action border-top-0 border-left-0
+                h6 dropdown-toggle " role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <img src="img/file.svg"> ${file.name}
                 </a>
                 <div class="dropdown-menu" style="width: 80%;" aria-labelledby="dropdownMenuLink">
-                    <a class="dropdown-item" href="/file/get-file/${file.name}">Download</a>
-                    <a class="dropdown-item" data-toggle="modal" data-target="#r_${file.id}" href="#">Rename</a>
+                    <a class="dropdown-item" href="/file/get-file/${folderName}/${file.name}/last">Download last version</a>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#r_${file.id}" href="#">Rename file</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" data-toggle="modal" data-target="#d_${file.id}" href="#">Delete</a>
+                    <a class="dropdown-item" href="/file/versions/${folderName}/${file.name}">Work with versions</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#d_${file.id}" href="#">Delete file</a>
                 </div>
             </div>
         </#list>
@@ -50,7 +54,6 @@
                         </button>
                     </div>
                     <form action="/file/delete/${folderName}/${file.name}" method="post">
-                        <input type="hidden" name="_METHOD" value="DELETE"/>
                         <div class="modal-body">
                             <p>Delete file?</p>
                         </div>
@@ -77,7 +80,6 @@
                         </button>
                     </div>
                     <form action="/file/rename/${folderName}/${file.name}" method="post">
-                        <input type="hidden" name="_METHOD" value="PUT"/>
                         <div class="modal-body">
                             <input type="text" name="newFileName" class="form-control" value="${file.name}"/>
                         </div>

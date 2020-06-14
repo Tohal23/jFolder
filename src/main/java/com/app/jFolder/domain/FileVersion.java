@@ -1,6 +1,7 @@
 package com.app.jFolder.domain;
 
 import javax.persistence.*;
+import java.time.Instant;
 
 @Entity
 @Table(name = "file_version")
@@ -11,6 +12,8 @@ public class FileVersion implements Comparable<FileVersion> {
     @Column(name = "file_system_name")
     private String systemName;
     private Integer number;
+    private String description;
+    private Instant date;
     private String path;
     @ManyToOne
     private FileDescriptor file;
@@ -86,8 +89,31 @@ public class FileVersion implements Comparable<FileVersion> {
         this.hash_file = hash_file;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Instant getDate() {
+        return date;
+    }
+
+    public void setDate(Instant date) {
+        this.date = date;
+    }
+
     @Override
     public int compareTo(FileVersion o) {
-        return Integer.compare(this.number.compareTo(o.number), 0);
+        if (this.number > o.getNumber()) {
+            return -1;
+        } else if (this.number < o.getNumber()) {
+            return 1;
+        } else {
+            return 0;
+        }
+//        return Integer.compare(this.number.compareTo(o.number), 0);
     }
 }

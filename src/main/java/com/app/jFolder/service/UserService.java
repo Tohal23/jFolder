@@ -1,6 +1,7 @@
 package com.app.jFolder.service;
 
 import com.app.jFolder.domain.User;
+import com.app.jFolder.exception.user.UserEmailAlreadyExistsException;
 import com.app.jFolder.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -38,6 +41,11 @@ public class UserService implements UserDetailsService {
 
         if (userFromDb != null) {
             return false;
+        }
+
+        List<User> users = userRepo.findAll();
+        if (users.stream().map(User::getEmail).collect(Collectors.toList()).contains(user.getEmail())) {
+            throw new UserEmailAlreadyExistsException(user.getEmail()+" is already in use!");
         }
 
         user.setActivationCode(UUID.randomUUID().toString());
